@@ -2,7 +2,6 @@ import User from '../models/user.model.js'
 import bcryptjs from 'bcryptjs'
 import { errorHandler } from '../utils/error.js'
 import jwt from 'jsonwebtoken'
-import generateTokenAndSetCookie from '../utils/generateTokenAndSetCookie.js'
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body
@@ -23,9 +22,9 @@ export const signin = async (req, res, next) => {
     if (!validUser) return next(errorHandler(404, 'User not found!'))
     const validPassword = bcryptjs.compareSync(password, validUser.password)
     if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'))
-
+    const token = jwt.sign({ id: validUser._id }, 'jwtSecret')
     const { password: pass, ...rest } = validUser._doc
-    generateTokenAndSetCookie(validUser._id, res)
+    res.cookie('access_token', token, { httpOnly: true }).status(200).json(rest)
   } catch (error) {
     next(error)
   }
@@ -55,7 +54,12 @@ export const google = async (req, res, next) => {
         avatar: req.body.photo,
       })
       await newUser.save()
-      generateTokenAndSetCookie(newuser._id, res)
+      const token = jwt.sign({ id: newUser._id }, 'jwtSecret')
+      const { password: pass, ...rest } = newUser._doc
+      res
+        .cookie('access_token', token, { httpOnly: true })
+        .status(200)
+        .json(rest)
     }
   } catch (error) {
     next(error)
@@ -64,10 +68,9 @@ export const google = async (req, res, next) => {
 
 export const signOut = async (req, res, next) => {
   try {
-    res.cookie('jwt', '', { maxAge: 1 })
-    res.status(200).json({ message: 'User logged out successfully' })
-  } catch (err) {
-    res.status(500).json({ error: err.message })
-    console.log('Error in logout: ', err.message)
+    res.clearCookie('access_token')
+    res.status(200).json('User has been logged out!')
+  } catch (error) {
+    next(error)
   }
 }
