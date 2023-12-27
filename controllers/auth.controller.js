@@ -24,7 +24,14 @@ export const signin = async (req, res, next) => {
     if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'))
     const token = jwt.sign({ id: validUser._id }, 'jwtSecret')
     const { password: pass, ...rest } = validUser._doc
-    res.cookie('access_token', token, { httpOnly: true }).status(200).json(rest)
+    res
+      .cookie('access_token', token, {
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
+      })
+      .status(200)
+      .json(rest)
   } catch (error) {
     next(error)
   }
