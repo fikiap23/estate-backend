@@ -26,7 +26,7 @@ const app = express()
 // Enable CORS for all routes with credentials support
 app.use(
   cors({
-    origin: ['https://zine-zone.vercel.app', 'http://localhost:3000'],
+    origin: ['https://zine-zone.vercel.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
