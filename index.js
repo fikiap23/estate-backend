@@ -28,7 +28,7 @@ const app = express()
 app.use(
   cors({
     origin: [
-      'https://baraya-art-v3.vercel.app',
+      'https://zine-zone.vercel.app',
       'http://localhost:3000',
       'http://localhost:5173',
     ],
