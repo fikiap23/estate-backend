@@ -23,15 +23,9 @@ mongoose
   })
 
 const app = express()
-// Enable CORS for all routes with credentials support
-app.use(
-  cors({
-    origin: ['https://zine-zone.vercel.app', 'http://localhost:5173'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-  })
-)
+
 app.use(express.json())
+app.use(cors())
 
 app.use(cookieParser())
 
